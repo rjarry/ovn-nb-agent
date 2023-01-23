@@ -1,0 +1,93 @@
+switch tenantB
+    port (aka external-407-vhu-2)
+        type: ""
+        requested-chassis: "" <-- wtf ???
+        device_owner: "" <-- wtf ???
+        addresses: ["fa:16:3e:2d:83:84 192.168.202.240"]
+        subnet-dhcp: 192.168.202.0/24
+    port
+        type: ""
+        requested-chassis: compute-0.localdomain
+        device_owner: compute:nova
+        addresses: ["fa:16:3e:fd:8c:db 192.168.202.47"]
+        subnet-dhcp: 192.168.202.0/24
+    port (aka external-407-vhu-1)
+        type: ""
+        requested-chassis: ""
+        device_owner: ""
+        addresses: ["fa:16:3e:40:ac:a6 192.168.202.218"]
+        subnet-dhcp: 192.168.202.0/24
+    port provnet-xxxxxxx
+        type: localnet
+        tag: 407
+        addresses: ["unknown"]
+    port
+        type: localport
+        requested-chassis: ""
+        device_owner: network:distributed
+        cidrs: 192.168.202.2/24
+        addresses: ["fa:16:3e:e5:4e:70 192.168.202.2"]
+switch external
+    port
+        type: ""
+        requested-chassis: compute-0.localdomain
+        device_owner: compute:nova
+        addresses: ["fa:16:3e:e8:d1:0f 192.168.122.62", "unknown"]
+        subnet-dhcp: 192.168.122.0/24
+    port
+        type: localport
+        requested-chassis: ""
+        device_owner: network:distributed
+        cidrs: 192.168.122.2/24
+        addresses: ["fa:16:3e:f7:51:e9 192.168.122.2"]
+    port
+        type: router
+        device_owner: network:router_gateway
+        router-port: lrp-1
+        exclude-lb-vips-from-garp: true ????
+        nat-addresses: router ????
+    port provnet-yyyyyyyyy
+        type: localnet
+        tag: 406
+        addresses: ["unknown"]
+switch tenantA
+    port
+        type: ""
+        device_owner: compute:nova
+        requested-chassis: compute-0.localdomain
+        addresses: ["fa:16:3e:b0:a1:ee 192.168.201.170"]
+    port
+        type: localport
+        requested-chassis: ""
+        device_owner: network:distributed
+        addresses: ["fa:16:3e:29:a0:c3 192.168.201.2"]
+        cidrs: 192.168.201.2/24
+switch internal
+    port
+        type: router
+        device_owner: network:router_interface
+        router-port: lrp-2
+    port
+        type: ""
+        device_owner: compute:nova
+        requested-chassis: compute-0.localdomain
+        addresses: ["fa:16:3e:eb:31:93 192.168.200.90"]
+        subnet-dhcp: 192.168.200.0/24
+    port
+        type: localport
+        device_owner: network:distributed
+        requested-chassis: ""
+        addresses: ["fa:16:3e:15:ef:1f 192.168.200.2"]
+        cidr: 192.168.200.2/24
+router rtr
+    port lrp-1
+        mac: "fa:16:3e:1e:d9:f4"
+        networks: ["192.168.122.234/24"]
+        gateway chassis: [????? -> points to nothing]
+    port lrp-2
+        mac: "fa:16:3e:69:de:bd"
+        networks: ["192.168.200.1/24"]
+    nat
+        external ip: "192.168.122.234"
+        logical ip: "192.168.200.0/24"
+        type: "snat"

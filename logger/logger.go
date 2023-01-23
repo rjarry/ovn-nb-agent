@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"strings"
 )
 
 type LogLevel int
@@ -19,6 +18,14 @@ const (
 	ERROR LogLevel = 40
 )
 
+var nameToLevel = map[string]LogLevel{
+	"trace": TRACE,
+	"debug": DEBUG,
+	"info":  INFO,
+	"warn":  WARN,
+	"error": ERROR,
+}
+
 var (
 	trace    *log.Logger
 	dbg      *log.Logger
@@ -29,36 +36,28 @@ var (
 )
 
 func Init(file *os.File, level string) error {
-	var e error
-	minLevel, e = parseLevel(level)
-	if e != nil {
-		return e
+	var found bool
+	minLevel, found = nameToLevel[level]
+	if !found {
+		return fmt.Errorf("%s: invalid log level", level)
 	}
 	flags := log.Ldate | log.Ltime | log.Lmicroseconds | log.Lshortfile
 	if file != nil {
-		trace = log.New(file, "TRACE ", flags)
-		dbg = log.New(file, "DEBUG ", flags)
-		info = log.New(file, "INFO  ", flags)
-		warn = log.New(file, "WARN  ", flags)
-		err = log.New(file, "ERROR ", flags)
+		trace = log.New(file, "trace ", flags)
+		dbg = log.New(file, "debug ", flags)
+		info = log.New(file, "info  ", flags)
+		warn = log.New(file, "warn  ", flags)
+		err = log.New(file, "error ", flags)
 	}
 	return nil
 }
 
-func parseLevel(value string) (LogLevel, error) {
-	switch strings.ToLower(value) {
-	case "trace":
-		return TRACE, nil
-	case "debug":
-		return DEBUG, nil
-	case "info":
-		return INFO, nil
-	case "warn", "warning":
-		return WARN, nil
-	case "err", "error":
-		return ERROR, nil
+func LevelNames() []string {
+	var names []string
+	for n := range nameToLevel {
+		names = append(names, n)
 	}
-	return 0, fmt.Errorf("%s: invalid log level", value)
+	return names
 }
 
 func Tracef(message string, args ...interface{}) {
