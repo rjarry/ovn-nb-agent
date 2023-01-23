@@ -40,7 +40,7 @@ func main() {
 	fs.StringVar(&logLevel, "l", "info", "log level")
 	fs.BoolVar(&showVersion, "V", false, "show version and exit")
 	fs.StringVar(&endpoint, "s", sockEndpoint, "ovn NB socket endpoint")
-	fs.StringVar(&backendName, "b", "", "configuration backend")
+	fs.StringVar(&backendName, "b", "nm", "configuration backend")
 	_ = fs.Parse(os.Args[1:])
 
 	if showVersion {

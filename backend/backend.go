@@ -7,6 +7,7 @@ import (
 
 	"github.com/ovn-org/libovsdb/client"
 	"github.com/ovn-org/libovsdb/model"
+	"github.com/rjarry/ovn-nb-agent/backend/nm"
 	"github.com/rjarry/ovn-nb-agent/logger"
 	nb "github.com/rjarry/ovn-nb-agent/schema/northbound"
 )
@@ -40,8 +41,10 @@ type Backend interface {
 }
 
 var (
-	backends map[string]Backend
-	b        Backend
+	backends = map[string]Backend{
+		"nm": &nm.Backend,
+	}
+	b Backend
 )
 
 func InitBackend(name string, north client.Client, args []string) error {
